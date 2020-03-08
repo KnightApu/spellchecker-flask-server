@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Index</title>
+{% endblock %}
+
+
+
+
+{% block body %}
+<h1>Error Suggestion</h1>
+
+
+
+<form method="POST" action="/suggestionList">
+   <textarea type="text" rows="20" cols="100" name="inputtextarea" id="inputtextarea">
+   </textarea>
+
+    <textarea rows="20" cols="100" name="outputtextarea" id="outputtextarea">
+    </textarea>
+    <br>
+</form>
+
+<button id="submit" class="btn btn-outline-primary">Click me</button>
+
+
+<script>
+$(document).ready(function(){
+  $("#submit").click(function(){
+  var suggestedWord = [];
+     $.ajax({
+                data: {
+                    inputtextarea: $('#inputtextarea').val()
+                },
+                type: "POST",
+                dataType: "json",
+                url: "http://192.168.18.170:8080/suggestionList",
+                success: function(result) {
+                    for (let i = 0; i < Object.keys(result).length; i++) {
+                            suggestedWord.push(result[i].words);
+                            }
+                    $("#outputtextarea").val(suggestedWord);
+                },
+                error: function(e) {
+                    alert(JSON.stringify(e))
+                    console.log(e);
+                }
+            });
+
+  });
+});
+</script>
+
+{% endblock %}

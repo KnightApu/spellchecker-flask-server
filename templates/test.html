@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Testing Javascript</title>
+{% endblock %}
+
+
+
+
+{% block body %}
+<h1>Testing</h1>
+<p id="demo"></p>
+<form method="POST">
+   <textarea type="text" rows="10" cols="10" name="inputtextarea" id="inputtextarea">
+       {{ inputtextarea }}
+   </textarea>
+
+    <textarea rows="10" cols="10" name="outputtextarea" id="outputtextarea">
+    </textarea>
+    <input name="number" type="text" id="number"/>
+    <br>
+
+
+</form>
+
+<button id="submit">Click me</button>
+
+
+
+<script>
+function myFunction() {
+  document.getElementById("demo").innerHTML = "Hello World";
+}
+</script>
+
+<script>
+$(document).ready(function(){
+  $("#submit").click(function(){
+
+     $.ajax({
+                data: {
+                    inputtextarea: $('#inputtextarea').val()
+                },
+                type: "POST",
+                dataType: "json",
+                url: "http://127.0.0.1:5000/resttest",
+                success: function(result) {
+                    console.log("reload hocche keno");
+                    alert(result.text)
+                    $("#outputtextarea").val(result.text);
+                },
+                error: function(e) {
+                    alert(e)
+                    console.log(e);
+                }
+            });
+
+  });
+});
+</script>
+
+{% endblock %}

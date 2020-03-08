@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Index</title>
+{% endblock %}
+
+
+
+
+{% block body %}
+<h1>Detection</h1>
+
+<form method="POST" action="/detectedList">
+   <textarea type="text" rows="20" cols="100" name="inputtextarea" id="inputtextarea" contenteditable='true'>
+   </textarea>
+
+    <textarea rows="20" cols="100" name="outputtextarea" id="outputtextarea">
+    </textarea>
+    <br>
+</form>
+
+<button type="button" class="btn btn-outline-primary" id="submit">Click me</button>
+
+<div contenteditable='true' id='editor'>this is the wrd</div>
+
+<script>
+$(document).ready(function(){
+  $("#submit").click(function(){
+  var wrongWord = [];
+
+     $.ajax({
+                data: {
+                    inputtextarea: $('#inputtextarea').val()
+                },
+                type: "POST",
+                dataType: "json",
+                url: "http://192.168.1.100:8090/detectedList",
+                success: function(result) {
+                    for (let i = 0; i < Object.keys(result).length; i++) {
+                        if (result[i].isCorrect == 0) {
+                            wrongWord.push(result[i].word);
+                        }
+                    $('#editor').html($('#editor').html().replace("wrd",
+                     "<span style='color: red;'>wrd</span>"));
+                    }
+                    $("#outputtextarea").val(wrongWord);
+                },
+                error: function(e) {
+                    alert(JSON.stringify(e))
+                    console.log(e);
+                }
+            });
+
+  });
+});
+</script>
+
+
+
+{% endblock %}

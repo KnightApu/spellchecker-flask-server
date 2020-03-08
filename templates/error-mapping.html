@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Index</title>
+{% endblock %}
+
+
+
+
+{% block body %}
+<h1>Bangla Spell and Grammar Checker</h1>
+
+
+<div class="container">
+
+  <div class="row">
+    <div class="col">
+        <form method="POST" action="/detectedList">
+             <textarea type="text" rows="20" cols="50" name="inputtextarea" id="inputtextarea" contenteditable='true'>
+             </textarea>
+        </form>
+
+<button type="button" class="btn btn-outline-primary" id="submit">Check Spelling</button>
+
+    </div>
+    <div class="col" >
+    <div>Wrong Words</div>
+        <div id="wrongwords" style="overflow-y: scroll; height:400px;"></div>
+    </div>
+    <div class="col">
+        <div>Suggestions</div>
+        <div id='suggestions'></div>
+        <div id="loading">
+        <!-- You can add gif image here
+        for this demo we are just using text -->
+            <img src="static/loading.gif" height="250" width="250">
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<script>
+$(document).ready(function(){
+        $("#loading").hide();
+  $(document).ajaxStart(function () {
+        $("#loading").show();
+       // $("#suggestions").hide();
+        $(".btn-outline-danger").prop('disabled', true);
+    }).ajaxStop(function () {
+        $("#loading").hide();
+        //$(".btn-outline-danger").show();
+        $(".btn-outline-danger").prop('disabled', false);
+        $("#suggestions").show();
+    });
+
+  $("#submit").click(function(){
+  $("#wrongwords").html("");
+  $("#suggestions").html("");
+  var wrongWord = [];
+     $.ajax({
+                data: {
+                    inputtextarea: $('#inputtextarea').val()
+                },
+                type: "POST",
+                dataType: "json",
+                url: "https://smartninja-test-1.azurewebsites.net/detectedList",
+                success: function(result) {
+                    for (let i = 0; i < Object.keys(result).length; i++) {
+                        if (result[i].isCorrect == 0) {
+                            wrongWord.push(result[i].word);
+                            $( "#wrongwords" ).append( "<button class='btn btn-outline-danger' id='" + result[i].word +"' onclick='generateSuggestion(this.id)'>" + result[i].word +"</button><br>" );
+                    }
+                        }
+
+                },
+                error: function(e) {
+                    alert(JSON.stringify(e))
+                    console.log(e);
+                }
+            });
+
+  });
+
+});
+</script>
+
+<script type="text/javascript">
+  function generateSuggestion(wrongWord)
+  {
+      console.log(wrongWord);
+      $("#suggestions").html("");
+      $( "#suggestions" ).append( "<button class='btn btn-outline-danger'>" + wrongWord +"</button><br>" );
+      var suggestedWord = [];
+      var suggestionCount;
+     $.ajax({
+                data: {
+                    inputtextarea: wrongWord
+                },
+                type: "POST",
+                dataType: "json",
+                url: "https://smartninja-test-1.azurewebsites.net/suggestionList",
+                success: function(result) {
+                    suggestionCount = Object.keys(result).length;
+                    if(suggestionCount == 0) {
+                        $( "#suggestions" ).html("No suggestion");
+                    }
+                    else {
+                            for (let i = 0; i < suggestionCount ; i++) {
+                            suggestedWord.push(result[i].words);
+                            $( "#suggestions" ).append( "<button class='btn btn-outline-success' id='" + suggestedWord[i] +"' onclick='mapCorrectWord(" + wrongWord + ",this.id)'>" + suggestedWord[i] +"</button><br>" );
+                            }
+                        }
+                },
+                error: function(e) {
+                    alert(JSON.stringify(e))
+                    console.log(e);
+                }
+            });
+
+
+  }
+
+  function mapCorrectWord(wrongWord, suggestedWord)
+    {
+        console.log(wrongWord.id + " " + suggestedWord);
+        $.ajax({
+                data: {
+                    wrongWord: wrongWord.id,
+                    suggestedWord: suggestedWord
+                },
+                type: "POST",
+                dataType: "json",
+                url: "https://smartninja-test-1.azurewebsites.net/errormapping",
+                success: function(result) {
+                    alert("Your feedback has been submitted.");
+
+
+
+                },
+                error: function(e) {
+                    alert(JSON.stringify(e))
+                    console.log(e);
+                }
+            });
+    }
+
+
+</script>
+{% endblock %}
