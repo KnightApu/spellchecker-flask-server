@@ -67,7 +67,7 @@ $(document).ready(function(){
                 },
                 type: "POST",
                 dataType: "json",
-                url: "https://smartninja-test-1.azurewebsites.net/detectedList",
+                url: "https://bangla-spell-checker-flask.azurewebsites.net/detectedList",
                 success: function(result) {
                     for (let i = 0; i < Object.keys(result).length; i++) {
                         if (result[i].isCorrect == 0) {
@@ -102,7 +102,7 @@ $(document).ready(function(){
                 },
                 type: "POST",
                 dataType: "json",
-                url: "https://smartninja-test-1.azurewebsites.net/suggestionList",
+                url: "https://bangla-spell-checker-flask.azurewebsites.net/suggestionList",
                 success: function(result) {
                     suggestionCount = Object.keys(result).length;
                     if(suggestionCount == 0) {
@@ -134,7 +134,7 @@ $(document).ready(function(){
                 },
                 type: "POST",
                 dataType: "json",
-                url: "https://smartninja-test-1.azurewebsites.net/errormapping",
+                url: "https://bangla-spell-checker-flask.azurewebsites.net/errormapping",
                 success: function(result) {
                     alert("Your feedback has been submitted.");
 
