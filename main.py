@@ -107,6 +107,7 @@ def detected():
     # return render_template('detection.html', result= wordListWithErrorLeveledOnIt[0].words, inputtextarea=inputtextarea)
     return wordListWithErrorLeveledOnItInJSONFormat
 
+@cross_origin()
 @app.route('/api/getverdict/<word>', methods=['POST', 'GET'])
 def getVerdict(word):
     bWords = {}
@@ -125,7 +126,8 @@ def getVerdict(word):
     # return render_template('detection.html', result= wordListWithErrorLeveledOnIt[0].words, inputtextarea=inputtextarea)
     return wordListWithErrorLeveledOnItInJSONFormat
 
-@app.route('/api/getsuggestion/<word>', methods=['POST', 'GET'])
+@cross_origin()
+@app.route('/api/getsuggestion/<word>', methods=['GET'])
 def getSuggestion(word):
     if request.method == "GET":
         # formData = request.form
@@ -175,7 +177,7 @@ def errormapping():
 def test(word):
 
     return jsonify(
-        {"text" : "word"}
+        {"text" : word}
     )
 
 @app.route('/resttest', methods=['POST', 'GET'])

@@ -51,7 +51,7 @@ class SuggestionGenerator:
         #most expensive code
         for i in range(len(self.data)):
             difference = (len(self.ipaOfWord) - len(self.data[i]['ipa']))
-            if( (difference < 2 and difference > 0) or (difference > -2 and difference < 0) ):
+            if( (difference < 3 and difference > 0) or (difference > -3 and difference < 0) ):
                 self.data[i]['ed'] = self.editDistance(self.ipaOfWord, self.data[i]['ipa'], len(self.ipaOfWord), len(self.data[i]['ipa']))
             else:
                 self.data[i]['ed'] = 100
