@@ -2,9 +2,9 @@ from ipaGenerator import IPAGenerator
 
 class SuggestionGenerator:
 
-    def __init__(self, data, word):
+    def __init__(self, data, ipaOfWord):
         self.data = data
-        self.word = word
+        self.ipaOfWord = ipaOfWord
         for i in range(len(self.data)):
             self.data[i]['ed'] = 0
 
@@ -48,8 +48,14 @@ class SuggestionGenerator:
                        )
 
     def editDistanceGenerator(self):
+        #most expensive code
         for i in range(len(self.data)):
-            self.data[i]['ed'] = self.editDistance(self.word, self.data[i]['ipa'], len(self.word), len(self.data[i]['ipa']))
+            difference = (len(self.ipaOfWord) - len(self.data[i]['ipa']))
+            if( (difference < 2 and difference > 0) or (difference > -2 and difference < 0) ):
+                self.data[i]['ed'] = self.editDistance(self.ipaOfWord, self.data[i]['ipa'], len(self.ipaOfWord), len(self.data[i]['ipa']))
+            else:
+                self.data[i]['ed'] = 100
+        # most expensive code
 
         self.data.sort(key=lambda x: x['ed'], reverse=False)
         count = 0
