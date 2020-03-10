@@ -9,6 +9,12 @@ class TrieNode():
         self.children = {}
         self.last = False
 
+    def __repr__(self):
+        return "TrieNode()"
+
+    def __str__(self):
+        return "member of TrieNode"
+
 
 class Trie():
     def __init__(self):
