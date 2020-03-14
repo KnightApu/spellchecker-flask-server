@@ -8,9 +8,10 @@ from ipaGenerator import IPAGenerator
 from suggestionGenerator import SuggestionGenerator
 from wordTokenizer import word_tokenizer
 from errorDetector import error_detector
-from BengaliWord import BengaliWord
+from BengaliWord import BengaliWord, SuggestedWord
 from trieGeek import Trie
 from wordSugg import TrieNode
+from TrieWithWordSuggestion import TrieforSuggestion
 import json
 
 with open('ankurDictionaryWithIPA.json',
@@ -22,9 +23,15 @@ with open('ankurDictionaryWithIPA.json',
 
     print(data[0]['words'])
     print(len(data))
+    #trie for detection
     my_trie = Trie()
     for i in range(len(data)):
         my_trie.insert(data[i]['words'])
+
+    #trie for suggestion
+    myTrieforSuggestion = TrieforSuggestion()
+    for i in range(len(data)):
+        myTrieforSuggestion.insert(data[i]['words'])
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -69,17 +76,39 @@ def ipaconverter():
 @cross_origin()
 @app.route('/suggestionList', methods=['POST', 'GET'])
 def suggestionList():
+    suggestedWords = []
+    suggestedWordList = []
+    wordScoreList = []
     if request.method == "POST":
         formData = request.form
         inputtextarea = formData['inputtextarea']
         bengaliWord = str(inputtextarea).strip()
         print(bengaliWord)
-        bengaliWordIPAEncoded = IPAGenerator(bengaliWord).getIPA()
-        suggestion = SuggestionGenerator(fata, bengaliWordIPAEncoded)
-        detailSuggestion = suggestion.editDistanceGenerator()
-        detailSuggestionInJSONFormat = json.dumps(detailSuggestion)
-        print(bengaliWord + "=====>>" + detailSuggestionInJSONFormat)
-    return detailSuggestionInJSONFormat
+        wordWithDistance = myTrieforSuggestion.getSuggestedWords(bengaliWord)
+        for key in wordWithDistance.keys():
+            suggestedWordList.append(key)
+            wordScoreList.append(wordWithDistance.get(key))
+
+        for i in range(len(wordWithDistance)):
+            suggestedWords.append(SuggestedWord(suggestedWordList[i], wordScoreList[i]).__dict__)
+
+        suggestedWords.sort(key=lambda x: x['score'], reverse=False)
+        print(str(suggestedWords))
+
+        suggestionJSONFormat = json.dumps(suggestedWords)
+
+    return suggestionJSONFormat
+
+        # for key in wordWithDistance.keys():
+        #     print(key)
+        #     print(wordWithDistance.get(key))
+        #done using ipa
+        # bengaliWordIPAEncoded = IPAGenerator(bengaliWord).getIPA()
+        # suggestion = SuggestionGenerator(fata, bengaliWordIPAEncoded)
+        # detailSuggestion = suggestion.editDistanceGenerator()
+        # detailSuggestionInJSONFormat = json.dumps(detailSuggestion)
+        # print(bengaliWord + "=====>>" + detailSuggestionInJSONFormat)
+    #return detailSuggestionInJSONFormat
 
 @cross_origin()
 @app.route('/detectedList', methods=['POST', 'GET'])
@@ -90,20 +119,20 @@ def detected():
         inputtextarea = formData['inputtextarea']
         sentence = str(inputtextarea).strip()
         wordTokenizer = word_tokenizer().tokenize(sentence)
-        file1 = open("wordlist.txt", "a+", encoding='utf-8')  # write mode
+        #file1 = open("wordlist.txt", "a+", encoding='utf-8')  # write mode
         for i in range(len(wordTokenizer)):
             # bWords.append(BengaliWord(wordTokenizer[i]))
             bWords[i] = BengaliWord(wordTokenizer[i]).__dict__
-            file1.write(str(wordTokenizer[i]) + "\n")
-        print(bWords[0])
-        file1.close()
-        print(my_trie.search("চীন"))
-        comp = my_trie.printAutoSuggestions(bWords[0]['word'])
-        print(comp)
-        if comp == -1:
-            print("No other strings found with this prefix\n")
-        elif comp == 0:
-            print("No string found with this prefix\n")
+            #file1.write(str(wordTokenizer[i]) + "\n")
+        #print(bWords[0])
+        #file1.close()
+        #print(my_trie.search("চীন"))
+        #comp = my_trie.printAutoSuggestions(bWords[0]['word'])
+        # print(comp)
+        # if comp == -1:
+        #     print("No other strings found with this prefix\n")
+        # elif comp == 0:
+        #     print("No string found with this prefix\n")
 
         wordListWithErrorLeveledOnIt = error_detector(my_trie, bWords).error_generator()
         wordListWithErrorLeveledOnItInJSONFormat = json.dumps(wordListWithErrorLeveledOnIt)
@@ -199,4 +228,4 @@ def hello():
 
 
 if __name__ == '__main__':
-    app.run(host='119.148.4.20', port=8080, debug=True)
+    app.run(port=8080, debug=True)

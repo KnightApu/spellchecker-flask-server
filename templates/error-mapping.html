@@ -110,8 +110,10 @@ $(document).ready(function(){
                     }
                     else {
                             for (let i = 0; i < suggestionCount ; i++) {
-                            suggestedWord.push(result[i].words);
-                            $( "#suggestions" ).append( "<button class='btn btn-outline-success' id='" + suggestedWord[i] +"' onclick='mapCorrectWord(" + wrongWord + ",this.id)'>" + suggestedWord[i] +"</button><br>" );
+                                if(result[i].score < 1.00) {
+                                    suggestedWord.push(result[i].words);
+                                    $( "#suggestions" ).append( "<button class='btn btn-outline-success' id='" + suggestedWord[i] +"' onclick='mapCorrectWord(" + wrongWord + ",this.id)'>" + suggestedWord[i] +"</button><br>" );
+                                }
                             }
                         }
                 },
