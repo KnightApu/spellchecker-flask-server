@@ -162,17 +162,31 @@ def getVerdict(word):
 @cross_origin()
 @app.route('/api/getsuggestion/<word>', methods=['GET'])
 def getSuggestion(word):
+    suggestedWords = []
+    suggestedWordList = []
+    wordScoreList = []
     if request.method == "GET":
         # formData = request.form
         inputtextarea = word
         bengaliWord = str(inputtextarea).strip()
         print(bengaliWord)
-        bengaliWordIPAEncoded = IPAGenerator(bengaliWord).getIPA()
-        suggestion = SuggestionGenerator(fata, bengaliWordIPAEncoded)
-        detailSuggestion = suggestion.editDistanceGenerator()
-        detailSuggestionInJSONFormat = json.dumps(detailSuggestion)
-        print(bengaliWord + "=====>>" + detailSuggestionInJSONFormat)
-    return detailSuggestionInJSONFormat
+
+        wordWithDistance = myTrieforSuggestion.getSuggestedWords(bengaliWord)
+        for key in wordWithDistance.keys():
+            suggestedWordList.append(key)
+            wordScoreList.append(wordWithDistance.get(key))
+
+        for i in range(len(wordWithDistance)):
+            suggestedWords.append(SuggestedWord(suggestedWordList[i], wordScoreList[i]).__dict__)
+
+        suggestedWords.sort(key=lambda x: x['score'], reverse=False)
+        print(str(suggestedWords))
+
+        suggestionJSONFormat = json.dumps(suggestedWords)
+
+        print(bengaliWord + "=====>>" + suggestionJSONFormat)
+
+    return suggestionJSONFormat
 
 
 @app.route('/api/getprediction/<prefix>', methods=['POST', 'GET'])
