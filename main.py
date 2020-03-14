@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os, sys
 from flask import Flask, render_template, request, jsonify
 import re
@@ -8,6 +10,7 @@ from wordTokenizer import word_tokenizer
 from errorDetector import error_detector
 from BengaliWord import BengaliWord
 from trieGeek import Trie
+from wordSugg import TrieNode
 import json
 
 with open('ankurDictionaryWithIPA.json',
@@ -16,6 +19,7 @@ with open('ankurDictionaryWithIPA.json',
     with open('miniDictionaryWithIPA.json',
               encoding="utf8") as f:
         fata = json.load(f)
+
     print(data[0]['words'])
     print(len(data))
     my_trie = Trie()
@@ -195,4 +199,4 @@ def hello():
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(host='119.148.4.20', port=8080, debug=True)
