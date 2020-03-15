@@ -17,9 +17,6 @@ import json
 with open('ankurDictionaryWithIPA.json',
           encoding="utf8") as f:
     data = json.load(f)
-    with open('miniDictionaryWithIPA.json',
-              encoding="utf8") as f:
-        fata = json.load(f)
 
     print(data[0]['words'])
     print(len(data))
@@ -242,4 +239,5 @@ def hello():
 
 
 if __name__ == '__main__':
-    app.run(port=8080, debug=True)
+    app.run(host='119.148.4.20', port=8080, debug=True)
+    #app.run(port=8080, debug=True)
