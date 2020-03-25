@@ -176,12 +176,15 @@ def getPrediction(prefix):
 @app.route('/api/getresult/<word>', methods=['POST', 'GET'])
 def getresult(word):
     bWords = {}
+    wordListWithErrorLeveledOnIt = {}
     if request.method == "GET":
         # formData = request.form
         # inputtextarea = request.args['inputWord']
         inputtextarea = word
-        sentence = str(inputtextarea).strip()
-        wordTokenizer = word_tokenizer().tokenize(sentence)
+        #sentence = str(inputtextarea).strip()
+        preProcessedSentence = inputtextarea.replace(",", " ")
+        processedSentence = str(preProcessedSentence).strip()
+        wordTokenizer = word_tokenizer().tokenize(processedSentence)
         for i in range(len(wordTokenizer)):
             # bWords.append(BengaliWord(wordTokenizer[i]))
             bWords[i] = BengaliWord(wordTokenizer[i]).__dict__
@@ -253,5 +256,5 @@ def getSuggestionWithoutJson(word):
 
 
 if __name__ == '__main__':
-    #app.run(host='119.148.4.20', port=2626, debug=True)
-    app.run(port=8080, debug=True)
+    app.run(host='119.148.4.20', port=2626, debug=True)
+    #app.run(port=8080, debug=True)

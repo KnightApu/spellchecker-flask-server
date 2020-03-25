@@ -1,0 +1,2 @@
+kill -9 15201
+nohup python3 /Apu/spellchecker/main.py &

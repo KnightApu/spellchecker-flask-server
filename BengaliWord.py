@@ -4,6 +4,7 @@ class BengaliWord():
         self.isCorrect = 0
         self.ipa = ""
         self.ed = ""
+        self.suggestion = ""
 
 class SuggestedWord():
     def __init__(self, word, score):
