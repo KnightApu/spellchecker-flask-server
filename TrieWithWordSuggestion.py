@@ -6,7 +6,7 @@ class TrieNode():
 
 class TrieforSuggestion():
     wordWithDistance = {}
-    maxMisMatch = 1
+    maxMisMatch = 0
     similarLetterWeight = 0.25
     firstHalfWeight = 1
     secondHalfWeight = 0.5
@@ -55,8 +55,9 @@ class TrieforSuggestion():
             if char_not_found:
                 return False
         return True
-    def getSuggestedWords(self, word):
+    def getSuggestedWords(self, word, maxDistance):
         self.wordWithDistance = {}
+        self.maxMisMatch = maxDistance
 
         for child in self.root.children:
             self.dfs(0, "", word, 0, child)

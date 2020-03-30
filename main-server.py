@@ -138,7 +138,7 @@ def getVerdict(word):
         for i in range(len(wordTokenizer)):
             # bWords.append(BengaliWord(wordTokenizer[i]))
             bWords[i] = BengaliWord(wordTokenizer[i]).__dict__
-        wordListWithErrorLeveledOnIt = error_detector(my_trie, bWords).error_generator()
+        wordListWithErrorLeveledOnIt = error_detector(my_trie, bWords).error_generator_for_get_verdict()
         wordListWithErrorLeveledOnItInJSONFormat = json.dumps(wordListWithErrorLeveledOnIt)
     #return render_template('detection.html', result=wordListWithErrorLeveledOnIt, inputtextarea=inputtextarea)
     # return render_template('detection.html', result= wordListWithErrorLeveledOnIt[0].words, inputtextarea=inputtextarea)
@@ -188,7 +188,7 @@ def getresult(word):
         for i in range(len(wordTokenizer)):
             # bWords.append(BengaliWord(wordTokenizer[i]))
             bWords[i] = BengaliWord(wordTokenizer[i]).__dict__
-            wordListWithErrorLeveledOnIt[i] = error_detector(my_trie, bWords[i]).error_generator()
+            wordListWithErrorLeveledOnIt[i] = error_detector(my_trie, bWords[i]).error_generator_for_get_result()
             if (wordListWithErrorLeveledOnIt[i]['isCorrect'] == 0):
                 wordListWithErrorLeveledOnIt[i]['suggestion'] = getSuggestionWithoutJson((wordTokenizer[i]))
         wordListWithErrorLeveledOnItInJSONFormat = json.dumps(wordListWithErrorLeveledOnIt)
@@ -233,7 +233,31 @@ def hello():
     return "Hello, SmartNinja!"
 
 
+# def getSuggestionWithoutJson(word):
+#     suggestedWords = []
+#     suggestedWordList = []
+#     wordScoreList = []
+#     if request.method == "GET" or "POST":
+#         # formData = request.form
+#         inputtextarea = word
+#         bengaliWord = str(inputtextarea).strip()
+#
+#         wordWithDistance = myTrieforSuggestion.getSuggestedWords(bengaliWord)
+#         for key in wordWithDistance.keys():
+#             suggestedWordList.append(key)
+#             wordScoreList.append(wordWithDistance.get(key))
+#
+#         for i in range(len(wordWithDistance)):
+#             suggestedWords.append(SuggestedWord(suggestedWordList[i], wordScoreList[i]).__dict__)
+#
+#         suggestedWords.sort(key=lambda x: x['score'], reverse=False)
+#
+#     return suggestedWords
+
 def getSuggestionWithoutJson(word):
+    minWordLimit = 5
+    distanceLimit = 3
+    wordWithDistance = {}
     suggestedWords = []
     suggestedWordList = []
     wordScoreList = []
@@ -242,7 +266,10 @@ def getSuggestionWithoutJson(word):
         inputtextarea = word
         bengaliWord = str(inputtextarea).strip()
 
-        wordWithDistance = myTrieforSuggestion.getSuggestedWords(bengaliWord)
+        for index in range(1, distanceLimit + 1):
+            wordWithDistance = myTrieforSuggestion.getSuggestedWords(bengaliWord, index)
+            if len(wordWithDistance) >= minWordLimit:
+                break
         for key in wordWithDistance.keys():
             suggestedWordList.append(key)
             wordScoreList.append(wordWithDistance.get(key))
@@ -256,5 +283,5 @@ def getSuggestionWithoutJson(word):
 
 
 if __name__ == '__main__':
-    app.run(host='119.148.4.20', port=2626, debug=True)
-    #app.run(port=8080, debug=True)
+    #app.run(host='119.148.4.20', port=2626, debug=True)
+    app.run(port=8080, debug=True)
